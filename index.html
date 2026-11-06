@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050b18">
+<meta name="description" content="JARVIS Tamil Voice Assistant">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<title>JARVIS - Tamil Voice Assistant</title>
+<style>
+:root{--bg:#050b18;--panel:#0b1830;--cyan:#43d9ff;--blue:#147dff;--muted:#9bb4c9}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 15%,#102d52 0,#050b18 48%,#02050c 100%);color:#eaf8ff;font-family:system-ui,"Noto Sans Tamil",sans-serif}
+main{width:min(760px,100%);margin:auto;padding:22px 16px 36px}
+header{text-align:center;padding:14px 0 8px}
+h1{margin:4px 0;color:var(--cyan);letter-spacing:7px;font-size:clamp(30px,8vw,48px);text-shadow:0 0 22px #159dff}
+.sub{color:var(--muted);font-size:13px;letter-spacing:2px}
+.core-wrap{display:flex;justify-content:center;margin:28px 0}
+.core{width:190px;height:190px;border-radius:50%;border:2px solid #48dfff;display:grid;place-items:center;box-shadow:0 0 18px #168bff, inset 0 0 28px #1265aa;position:relative;background:radial-gradient(circle,#173d63,#061326 68%)}
+.core:before,.core:after{content:"";position:absolute;border:1px solid #1d9fff;border-radius:50%;inset:12px;animation:spin 12s linear infinite}
+.core:after{inset:-9px;border-style:dashed;animation-direction:reverse;animation-duration:24s}
+.core span{font-size:43px;color:#a5f2ff;text-shadow:0 0 18px #39cfff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status{text-align:center;color:var(--cyan);font-size:14px;min-height:24px;margin-bottom:15px}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+button{border:1px solid #35caff;background:#0b2946;color:#eafaff;padding:13px 18px;border-radius:14px;font-size:15px;font-weight:650}
+button.primary{background:linear-gradient(135deg,#0879cb,#1244a5);box-shadow:0 0 18px #0879cb66}
+button:active{transform:scale(.98)}
+.card{background:#08172bde;border:1px solid #1b4c70;border-radius:18px;padding:16px;margin-top:16px;box-shadow:0 8px 28px #0005}
+h2{font-size:17px;color:var(--cyan);margin:0 0 12px}
+#conversation{min-height:100px;max-height:310px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.msg{padding:10px 12px;border-radius:12px;line-height:1.55;white-space:pre-wrap}
+.user{background:#10365a;align-self:flex-end;max-width:90%}
+.bot{background:#102237;border:1px solid #1b4d69;align-self:flex-start;max-width:95%}
+.small{color:var(--muted);font-size:12px;line-height:1.6}
+input{width:100%;background:#061225;color:white;border:1px solid #245276;border-radius:12px;padding:13px;font-size:15px;outline:none}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0}
+.commands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.commands button{font-size:13px;padding:11px 8px}
+footer{text-align:center;color:#6e8ca6;font-size:11px;margin-top:22px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="sub">PERSONAL AI VOICE ASSISTANT</div>
+  <h1>J.A.R.V.I.S</h1>
+  <div class="sub">TAMIL EDITION · ANDROID WEB APP</div>
+</header>
+<div class="core-wrap"><div class="core"><span>J</span></div></div>
+<div class="status" id="status">JARVIS தயாராக உள்ளது</div>
+<div class="controls">
+  <button class="primary" id="listenBtn">🎙️ பேச தொடங்கு</button>
+  <button id="stopBtn">■ நிறுத்து</button>
+</div>
+
+<section class="card">
+  <h2>உரையாடல்</h2>
+  <div id="conversation">
+    <div class="msg bot">வணக்கம்! நான் JARVIS. என்ன உதவி வேண்டும்?</div>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <input id="textInput" placeholder="தமிழில் கட்டளை எழுதவும்..." autocomplete="off">
+    <button class="primary" id="sendBtn">அனுப்பு</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2>விரைவு கட்டளைகள்</h2>
+  <div class="commands">
+    <button data-cmd="இப்போது மணி என்ன?">🕒 நேரம்</button>
+    <button data-cmd="இன்றைய தேதி என்ன?">📅 தேதி</button>
+    <button data-cmd="பேட்டரி நிலை என்ன?">🔋 பேட்டரி</button>
+    <button data-cmd="YouTube திற">▶️ YouTube</button>
+    <button data-cmd="Google திற">🌐 Google</button>
+    <button data-cmd="எனக்கு ஒரு ஊக்கம் தரும் வாசகம் சொல்">💡 ஊக்கம்</button>
+  </div>
+</section>
+<section class="card">
+  <h2>குரல் அமைப்பு</h2>
+  <p class="small">தமிழ் குரல் கிடைத்தால் ta-IN பயன்படுத்தப்படும். உங்கள் Android / browser-ல் Tamil speech recognition அல்லது Tamil voice கிடைக்காவிட்டால் சில குரல் வசதிகள் இயங்காமல் இருக்கலாம்.</p>
+  <button id="voiceTest">🔊 குரல் சோதனை</button>
+</section>
+<footer>JARVIS demo · Microphone permission is used only when you tap “பேச தொடங்கு”.</footer>
+</main>
+<script>
+const statusEl=document.getElementById('status');
+const conversation=document.getElementById('conversation');
+const input=document.getElementById('textInput');
+let recognition=null, listening=false;
+
+function addMessage(text,who){
+  const el=document.createElement('div');
+  el.className='msg '+(who==='user'?'user':'bot');
+  el.textContent=(who==='user'?'நீங்கள்: ':'JARVIS: ')+text;
+  conversation.appendChild(el);
+  conversation.scrollTop=conversation.scrollHeight;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)){statusEl.textContent='இந்த browser-ல் குரல் வசதி இல்லை';return;}
+  window.speechSynthesis.cancel();
+  const utter=new SpeechSynthesisUtterance(text);
+  utter.lang='ta-IN'; utter.rate=0.95; utter.pitch=1.0;
+  const voices=window.speechSynthesis.getVoices();
+  const tamilVoice=voices.find(v=>v.lang.toLowerCase().startsWith('ta'));
+  if(tamilVoice) utter.voice=tamilVoice;
+  utter.onstart=()=>statusEl.textContent='JARVIS பேசுகிறது...';
+  utter.onend=()=>statusEl.textContent='JARVIS தயாராக உள்ளது';
+  window.speechSynthesis.speak(utter);
+}
+function reply(text){addMessage(text,'bot');speak(text);}
+async function handleCommand(raw){
+  const q=raw.trim().toLowerCase();
+  if(!q)return;
+  addMessage(raw,'user');
+  let answer='';
+  if(q.includes('நேரம்')||q.includes('மணி என்ன')||q.includes('time')){
+    answer='இப்போது நேரம் '+new Intl.DateTimeFormat('ta-IN',{hour:'numeric',minute:'2-digit'}).format(new Date())+'.';
+  }else if(q.includes('தேதி')||q.includes('date')){
+    answer='இன்றைய தேதி '+new Intl.DateTimeFormat('ta-IN',{dateStyle:'full'}).format(new Date())+'.';
+  }else if(q.includes('பேட்டரி')||q.includes('battery')){
+    if(navigator.getBattery){
+      try{const b=await navigator.getBattery();answer='உங்கள் பேட்டரி '+Math.round(b.level*100)+' சதவீதம்.'+(b.charging?' சார்ஜ் ஆகிக்கொண்டிருக்கிறது.':'');}
+      catch(e){answer='பேட்டரி தகவலைப் பெற முடியவில்லை.';}
+    }else answer='இந்த browser பேட்டரி தகவலை வழங்கவில்லை.';
+  }else if(q.includes('youtube')){
+    answer='YouTube திறக்கிறேன்.'; reply(answer); window.open('https://m.youtube.com','_blank'); return;
+  }else if(q.includes('google')){
+    answer='Google திறக்கிறேன்.'; reply(answer); window.open('https://www.google.com','_blank'); return;
+  }else if(q.includes('ஊக்கம்')||q.includes('motivat')){
+    answer='முயற்சியை நிறுத்தாதே. தினமும் சிறிய முன்னேற்றம் செய்தால் பெரிய இலக்கையும் அடையலாம்.';
+  }else if(q.includes('வணக்கம்')||q.includes('hello')||q.includes('ஹலோ')){
+    answer='வணக்கம்! நான் JARVIS. உங்களுக்கு என்ன உதவி செய்யலாம்?';
+  }else if(q.includes('நன்றி')){
+    answer='உங்களை வரவேற்கிறேன். இன்னும் ஏதாவது உதவி வேண்டுமா?';
+  }else{
+    answer='இந்த கட்டளைக்கான பதில் இன்னும் சேர்க்கப்படவில்லை. இப்போது நேரம், தேதி, பேட்டரி, Google, YouTube போன்ற கட்டளைகளை முயற்சி செய்யுங்கள். AI அறிவை அடுத்த கட்டத்தில் பாதுகாப்பான API இணைப்புடன் சேர்க்கலாம்.';
+  }
+  reply(answer);
+}
+function startListening(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){statusEl.textContent='Speech Recognition ஆதரவு இல்லை. Android Chrome-ல் முயற்சி செய்யுங்கள்.';return;}
+  if(recognition){try{recognition.stop()}catch(e){}}
+  recognition=new SpeechRecognition();
+  recognition.lang='ta-IN'; recognition.interimResults=false; recognition.maxAlternatives=1;
+  recognition.onstart=()=>{listening=true;statusEl.textContent='கேட்கிறேன்... தமிழில் பேசுங்கள்';};
+  recognition.onresult=(event)=>{const said=event.results[0][0].transcript;handleCommand(said);};
+  recognition.onerror=(event)=>{statusEl.textContent='மைக்ரோஃபோன் / குரல் பிழை: '+event.error;};
+  recognition.onend=()=>{listening=false;if(statusEl.textContent.includes('கேட்கிறேன்'))statusEl.textContent='JARVIS தயாராக உள்ளது';};
+  try{recognition.start();}catch(e){statusEl.textContent='மீண்டும் முயற்சி செய்யுங்கள்.';}
+}
+document.getElementById('listenBtn').addEventListener('click',startListening);
+document.getElementById('stopBtn').addEventListener('click',()=>{if(recognition)recognition.stop();window.speechSynthesis?.cancel();statusEl.textContent='நிறுத்தப்பட்டது';});
+document.getElementById('sendBtn').addEventListener('click',()=>{handleCommand(input.value);input.value='';});
+input.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('sendBtn').click();});
+document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>handleCommand(b.dataset.cmd)));
+document.getElementById('voiceTest').addEventListener('click',()=>speak('வணக்கம். நான் JARVIS. உங்கள் குரல் உதவியாளர் தயார் நிலையில் இருக்கிறேன்.'));
+if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>{};
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => {
+      console.warn("JARVIS offline setup failed:", err);
+    });
+  });
+}
+</script>
+</body>
+</html>
